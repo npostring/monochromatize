@@ -14,12 +14,17 @@
   --success: #10b981;
 }
 
+html,
 body {
   margin: 0;
   padding: 0;
   width: 340px;
-  height: auto;
-  min-height: 480px;
+  height: 540px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+body {
   font-family: 'Inter', sans-serif;
   background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
   color: var(--text-main);

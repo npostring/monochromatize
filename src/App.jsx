@@ -4,13 +4,41 @@ import './App.css';
 function App() {
   const [globalToggle, setGlobalToggle] = useState(true);
   const [monochromeSites, setMonochromeSites] = useState([]);
+  const [currentDomain, setCurrentDomain] = useState('');
   
   const [shortcut, setShortcut] = useState({ key: 'b', code: 'KeyB', altKey: true, ctrlKey: false, shiftKey: false });
   const [isRecording, setIsRecording] = useState(false);
   const shortcutBtnRef = useRef(null);
 
   useEffect(() => {
-    if (typeof chrome !== 'undefined') {
+    // Determine current domain
+    if (typeof chrome !== 'undefined' && chrome.tabs) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0] && tabs[0].url) {
+          try {
+            const url = new URL(tabs[0].url);
+            const restrictedStores = [
+              'chromewebstore.google.com',
+              'chrome.google.com',
+              'microsoftedge.microsoft.com',
+              'addons.mozilla.org'
+            ];
+            
+            if (['http:', 'https:'].includes(url.protocol)) {
+              if (restrictedStores.includes(url.hostname)) {
+                setCurrentDomain('N/A (Restricted)');
+              } else {
+                setCurrentDomain(url.hostname);
+              }
+            } else {
+              setCurrentDomain('N/A');
+            }
+          } catch (e) {
+            setCurrentDomain('N/A');
+          }
+        }
+      });
+
       // Load storage
       chrome.storage.sync.get(['globalToggle', 'monochromeSites', 'customShortcut'], (res) => {
         if (res.globalToggle !== undefined) setGlobalToggle(res.globalToggle);
@@ -71,6 +99,24 @@ function App() {
     setGlobalToggle(newValue);
     if (typeof chrome !== 'undefined') {
       chrome.storage.sync.set({ globalToggle: newValue });
+    }
+  };
+
+  const isCurrentMonochrome = monochromeSites.includes(currentDomain);
+
+  const toggleCurrentDomain = () => {
+    if (!currentDomain || currentDomain.startsWith('N/A')) return;
+    
+    let newSites;
+    if (isCurrentMonochrome) {
+      newSites = monochromeSites.filter(d => d !== currentDomain);
+    } else {
+      newSites = [...monochromeSites, currentDomain];
+    }
+    
+    setMonochromeSites(newSites);
+    if (typeof chrome !== 'undefined') {
+      chrome.storage.sync.set({ monochromeSites: newSites });
     }
   };
 
@@ -159,32 +205,57 @@ function App() {
       </header>
       
       <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Shortcut Key</span>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {formatShortcut(shortcut) !== 'Alt + B' && (
-              <button 
-                className="btn-icon" 
-                onClick={resetToDefault} 
-                title="Reset to Alt+B"
-                style={{ fontSize: '1.2rem', padding: '0 4px' }}
-              >
-                ↺
-              </button>
-            )}
-            <button 
-              ref={shortcutBtnRef}
-              className={`btn ${isRecording ? 'btn-recording' : 'btn-shortcut'}`}
-              onClick={() => setIsRecording(true)}
-            >
-              {isRecording ? 'Press combination...' : formatShortcut(shortcut)}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="card">
         <h3 className="section-title">Monochromatized Sites</h3>
+        
+        {/* ADD CURRENT SITE BUTTON */}
+        <div style={{ height: '46px', marginBottom: '16px' }}>
+          {currentDomain && !currentDomain.startsWith('N/A') ? (
+            <button 
+              className={`btn ${isCurrentMonochrome ? 'btn-danger' : 'btn-primary'}`}
+              onClick={toggleCurrentDomain}
+              style={{ 
+                width: '100%', 
+                height: '100%',
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                gap: '8px',
+                padding: '0 12px'
+              }}
+            >
+              {isCurrentMonochrome ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              )}
+              <span style={{ 
+                whiteSpace: 'nowrap', 
+                overflow: 'hidden', 
+                textOverflow: 'ellipsis', 
+                flex: 1,
+                textAlign: 'center'
+              }}>
+                {isCurrentMonochrome ? `Remove ${currentDomain}` : `Add ${currentDomain}`}
+              </span>
+            </button>
+          ) : (
+            <div style={{ 
+              width: '100%', 
+              height: '100%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px dashed var(--surface-border)',
+              borderRadius: '8px',
+              fontSize: '0.75rem',
+              color: 'var(--text-muted)'
+            }}>
+              Extension not available on this page
+            </div>
+          )}
+        </div>
+
         {monochromeSites.length === 0 ? (
           <div className="empty-state">No sites added yet.</div>
         ) : (
@@ -224,6 +295,31 @@ function App() {
             </svg>
             Export
           </button>
+        </div>
+      </div>
+
+      <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Shortcut Key</span>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {formatShortcut(shortcut) !== 'Alt + B' && (
+              <button 
+                className="btn-icon" 
+                onClick={resetToDefault} 
+                title="Reset to Alt+B"
+                style={{ fontSize: '1.2rem', padding: '0 4px' }}
+              >
+                ↺
+              </button>
+            )}
+            <button 
+              ref={shortcutBtnRef}
+              className={`btn ${isRecording ? 'btn-recording' : 'btn-shortcut'}`}
+              onClick={() => setIsRecording(true)}
+            >
+              {isRecording ? 'Press combination...' : formatShortcut(shortcut)}
+            </button>
+          </div>
         </div>
       </div>
     </div>
