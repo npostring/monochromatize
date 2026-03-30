@@ -204,124 +204,159 @@ function App() {
         </label>
       </header>
       
-      <div className="card">
-        <h3 className="section-title">Monochromatized Sites</h3>
-        
-        {/* ADD CURRENT SITE BUTTON */}
-        <div style={{ height: '46px', marginBottom: '16px' }}>
-          {currentDomain && !currentDomain.startsWith('N/A') ? (
-            <button 
-              className={`btn ${isCurrentMonochrome ? 'btn-danger' : 'btn-primary'}`}
-              onClick={toggleCurrentDomain}
-              style={{ 
-                width: '100%', 
-                height: '100%',
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                gap: '8px',
-                padding: '0 12px'
-              }}
-            >
-              {isCurrentMonochrome ? (
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              )}
-              <span style={{ 
-                whiteSpace: 'nowrap', 
-                overflow: 'hidden', 
-                textOverflow: 'ellipsis', 
-                flex: 1,
-                textAlign: 'center'
-              }}>
-                {isCurrentMonochrome ? `Remove ${currentDomain}` : `Add ${currentDomain}`}
-              </span>
-            </button>
-          ) : (
-            <div style={{ 
-              width: '100%', 
-              height: '100%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px dashed var(--surface-border)',
-              borderRadius: '8px',
-              fontSize: '0.75rem',
-              color: 'var(--text-muted)'
-            }}>
-              Extension not available on this page
-            </div>
-          )}
-        </div>
-
-        {monochromeSites.length === 0 ? (
-          <div className="empty-state">No sites added yet.</div>
-        ) : (
-          <div className="domain-list">
-            {monochromeSites.map((domain) => (
-              <div className="domain-item" key={domain}>
-                <span title={domain}>{domain}</span>
+      {globalToggle ? (
+        <>
+          <div className="card">
+            <h3 className="section-title">Sites</h3>
+            
+            {/* ADD CURRENT SITE BUTTON */}
+            <div style={{ height: '46px', marginBottom: '16px' }}>
+              {currentDomain && !currentDomain.startsWith('N/A') ? (
                 <button 
-                  className="btn-icon" 
-                  onClick={() => removeDomain(domain)}
-                  title="Remove site"
+                  className={`btn ${isCurrentMonochrome ? 'btn-danger' : 'btn-primary'}`}
+                  onClick={toggleCurrentDomain}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%',
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '8px',
+                    padding: '0 12px'
+                  }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
+                  {isCurrentMonochrome ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  )}
+                  <span style={{ 
+                    whiteSpace: 'nowrap', 
+                    overflow: 'hidden', 
+                    textOverflow: 'ellipsis', 
+                    flex: 1,
+                    textAlign: 'center'
+                  }}>
+                    {isCurrentMonochrome ? `Remove ${currentDomain}` : `Add ${currentDomain}`}
+                  </span>
+                </button>
+              ) : (
+                <div style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px dashed var(--surface-border)',
+                  borderRadius: '8px',
+                  fontSize: '0.75rem',
+                  color: 'var(--text-muted)'
+                }}>
+                  Extension not available on this page
+                </div>
+              )}
+            </div>
+
+            {monochromeSites.length === 0 ? (
+              <div className="empty-state">No sites added yet.</div>
+            ) : (
+              <div className="domain-list">
+                {monochromeSites.map((domain) => (
+                  <div className="domain-item" key={domain}>
+                    <span title={domain}>{domain}</span>
+                    <button 
+                      className="btn-icon" 
+                      onClick={() => removeDomain(domain)}
+                      title="Remove site"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '16px' }}>
+              <label className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem', cursor: 'pointer', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Import
+                <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
+              </label>
+              <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={handleExport}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Export
+              </button>
+            </div>
+          </div>
+
+          <div className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Shortcut Key</span>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                {formatShortcut(shortcut) !== 'Alt + B' && (
+                  <button 
+                    className="btn-icon" 
+                    onClick={resetToDefault} 
+                    title="Reset to Alt+B"
+                    style={{ fontSize: '1.2rem', padding: '0 4px' }}
+                  >
+                    ↺
+                  </button>
+                )}
+                <button 
+                  ref={shortcutBtnRef}
+                  className={`btn ${isRecording ? 'btn-recording' : 'btn-shortcut'}`}
+                  onClick={() => setIsRecording(true)}
+                >
+                  {isRecording ? 'Press combination...' : formatShortcut(shortcut)}
                 </button>
               </div>
-            ))}
+            </div>
           </div>
-        )}
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '16px' }}>
-          <label className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem', cursor: 'pointer', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
+        </>
+      ) : (
+        <div className="card" style={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          textAlign: 'center',
+          opacity: 0.8
+        }}>
+          <div style={{ 
+            width: '64px', 
+            height: '64px', 
+            borderRadius: '50%', 
+            background: 'rgba(255,255,255,0.05)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '16px'
+          }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-muted)' }}>
+              <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+              <line x1="12" y1="2" x2="12" y2="12"></line>
             </svg>
-            Import
-            <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
-          </label>
-          <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={handleExport}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            Export
-          </button>
-        </div>
-      </div>
-
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Shortcut Key</span>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {formatShortcut(shortcut) !== 'Alt + B' && (
-              <button 
-                className="btn-icon" 
-                onClick={resetToDefault} 
-                title="Reset to Alt+B"
-                style={{ fontSize: '1.2rem', padding: '0 4px' }}
-              >
-                ↺
-              </button>
-            )}
-            <button 
-              ref={shortcutBtnRef}
-              className={`btn ${isRecording ? 'btn-recording' : 'btn-shortcut'}`}
-              onClick={() => setIsRecording(true)}
-            >
-              {isRecording ? 'Press combination...' : formatShortcut(shortcut)}
-            </button>
           </div>
+          <h2 style={{ fontSize: '1.1rem', margin: '0 0 8px 0', color: 'var(--text-main)' }}>Extension is OFF</h2>
+          <p style={{ fontSize: '0.875rem', margin: 0, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+            Monochromatize is currently disabled.<br/>
+            Turn it back on to manage sites.
+          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 }
