@@ -41,3 +41,40 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
   }
 });
+
+// Custom shortcut listener (restored & isolated)
+document.addEventListener('keydown', async (e) => {
+  if (!customShortcut) return;
+  
+  // Guard: Check if global functionality is ON
+  const { globalToggle = true } = await chrome.storage.sync.get(['globalToggle']);
+  if (!globalToggle) return;
+  
+  // Guard: Do not fire when user is typing in forms/inputs
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable) {
+    return;
+  }
+
+  const keyMatches = e.code === customShortcut.code;
+
+  if (keyMatches &&
+      e.altKey === customShortcut.altKey &&
+      e.ctrlKey === customShortcut.ctrlKey &&
+      e.shiftKey === customShortcut.shiftKey) {
+    e.preventDefault();
+    
+    // Toggle current domain
+    const domain = window.location.hostname;
+    const { monochromeSites = [] } = await chrome.storage.sync.get(['monochromeSites']);
+    
+    const isEnabled = monochromeSites.includes(domain);
+    let newSites;
+    if (isEnabled) {
+      newSites = monochromeSites.filter(d => d !== domain);
+    } else {
+      newSites = [...monochromeSites, domain];
+    }
+    
+    await chrome.storage.sync.set({ monochromeSites: newSites });
+  }
+});

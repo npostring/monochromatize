@@ -151,13 +151,32 @@ function App() {
         if (Array.isArray(json)) {
           const newDomains = json
             .filter(item => item && typeof item.domain === 'string')
-            .map(item => item.domain);
+            .map(item => {
+              let d = item.domain.trim();
+              try {
+                // Extract hostname in case user included 'https://'
+                if (!d.startsWith('http://') && !d.startsWith('https://')) {
+                  d = 'https://' + d;
+                }
+                return new URL(d).hostname;
+              } catch (e) {
+                return item.domain.trim(); // Fallback string
+              }
+            })
+            .filter(Boolean);
           
           const merged = [...new Set([...monochromeSites, ...newDomains])];
-          setMonochromeSites(merged);
           
           if (typeof chrome !== 'undefined') {
-            chrome.storage.sync.set({ monochromeSites: merged });
+            chrome.storage.sync.set({ monochromeSites: merged }, () => {
+              if (chrome.runtime.lastError) {
+                alert('Failed to save: ' + chrome.runtime.lastError.message + '\n\nStorage limit may be exceeded.');
+              } else {
+                setMonochromeSites(merged);
+              }
+            });
+          } else {
+            setMonochromeSites(merged);
           }
         } else {
           alert('Invalid format. Expected an array of {"domain": "..."} objects.');

@@ -6,6 +6,8 @@ chrome.commands.onCommand.addListener(async (command) => {
     const { globalToggle } = await chrome.storage.sync.get(['globalToggle']);
     if (globalToggle === false) return;
 
+    if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) return;
+
     try {
       const url = new URL(tab.url);
       const domain = url.hostname;
