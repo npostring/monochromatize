@@ -376,6 +376,16 @@ function App() {
           </p>
         </div>
       )}
+      <div style={{ 
+        marginTop: 'auto', 
+        paddingTop: '16px', 
+        fontSize: '0.65rem', 
+        color: 'var(--text-muted)', 
+        textAlign: 'center',
+        opacity: 0.5
+      }}>
+        v1.0.0
+      </div>
     </div>
   );
 }
