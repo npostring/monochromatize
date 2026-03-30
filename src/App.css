@@ -80,28 +80,6 @@ input:checked + .slider:before {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.current-domain {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
-}
-
-.current-domain h3 {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  margin: 0;
-  font-weight: 500;
-}
-
-.domain-name {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-main);
-  word-break: break-all;
-}
-
 .btn {
   border: none;
   border-radius: 8px;
@@ -124,6 +102,16 @@ input:checked + .slider:before {
   transform: translateY(-1px);
 }
 
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--surface-border);
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .btn-danger {
   background-color: rgba(239, 68, 68, 0.1);
   color: var(--danger);
@@ -140,14 +128,33 @@ input:checked + .slider:before {
   color: var(--text-muted);
   margin: 0 0 12px 0;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .domain-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.domain-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.domain-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.domain-list::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 4px;
+}
+
+.domain-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .domain-item {
