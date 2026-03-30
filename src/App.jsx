@@ -17,8 +17,19 @@ function App() {
         if (tabs[0] && tabs[0].url) {
           try {
             const url = new URL(tabs[0].url);
+            const restrictedStores = [
+              'chromewebstore.google.com',
+              'chrome.google.com',
+              'microsoftedge.microsoft.com',
+              'addons.mozilla.org'
+            ];
+            
             if (['http:', 'https:'].includes(url.protocol)) {
-              setCurrentDomain(url.hostname);
+              if (restrictedStores.includes(url.hostname)) {
+                setCurrentDomain('N/A (Restricted Page)');
+              } else {
+                setCurrentDomain(url.hostname);
+              }
             } else {
               setCurrentDomain('N/A (Browser Page)');
             }
